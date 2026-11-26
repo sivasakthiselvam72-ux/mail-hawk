@@ -1,0 +1,662 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAIL HAWK | Smart Email Security</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+ --pink:#ed91bc;
+ --pink2:#f8dce9;
+ --purple:#a68bd5;
+ --purple2:#eee6fb;
+ --dark:#604b75;
+ --text:#74627e;
+ --white:#fff;
+ --border:#f0ddeb;
+ --bg:#fff7fb;
+}
+body{
+ font-family:'Segoe UI',sans-serif;
+ background:var(--bg);
+ color:var(--dark);
+ overflow-x:hidden;
+}
+button,input,textarea{font-family:inherit}
+.doodles{
+ position:fixed;inset:0;pointer-events:none;
+ overflow:hidden;z-index:0;
+ color:#c99bc9;opacity:.14;
+}
+.doodles span{
+ position:absolute;font-size:48px;
+ animation:float 8s ease-in-out infinite;
+}
+.doodles span:nth-child(1){top:8%;left:23%}
+.doodles span:nth-child(2){top:30%;right:5%;font-size:65px}
+.doodles span:nth-child(3){top:70%;left:15%}
+.doodles span:nth-child(4){top:55%;right:27%;font-size:60px}
+.doodles span:nth-child(5){top:88%;right:8%}
+.doodles span:nth-child(6){top:15%;right:35%}
+.doodles span:nth-child(7){top:45%;left:5%;font-size:55px}
+.doodles span:nth-child(8){top:82%;left:55%}
+@keyframes float{
+ 0%,100%{transform:translateY(0) rotate(0)}
+ 50%{transform:translateY(-12px) rotate(5deg)}
+}
+.app{display:flex;min-height:100vh;position:relative;z-index:1}
+.sidebar{
+ width:245px;position:fixed;top:0;bottom:0;left:0;
+ background:#fff;padding:24px 17px;
+ border-right:1px solid var(--border);
+ box-shadow:3px 0 20px #d9b5d522;
+ z-index:5;
+}
+.logo{display:flex;align-items:center;gap:11px;padding:5px 8px 30px}
+.logo-icon{
+ width:48px;height:48px;border-radius:16px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#f1a0c6,#a68bd5);
+ font-size:27px;color:white;
+ box-shadow:0 5px 15px #d69bc755;
+}
+.logo h2{font-size:21px;letter-spacing:1px;color:#956dbb}
+.logo small{font-size:9px;letter-spacing:1.4px;color:#b995bd}
+.nav-title{font-size:10px;color:#b69caf;padding:10px 12px;letter-spacing:2px}
+.nav button{
+ display:block;width:100%;padding:13px 14px;margin:4px 0;
+ border:0;background:transparent;border-radius:12px;
+ text-align:left;font-size:14px;color:#806c87;
+ cursor:pointer;transition:.2s;
+}
+.nav button:hover,.nav button.active{
+ background:linear-gradient(100deg,#fce6f1,#f0e9ff);
+ color:#915bb0;font-weight:600;
+}
+.nav button span{margin-right:12px;font-size:17px}
+.sidebar-bottom{
+ position:absolute;bottom:20px;left:20px;
+ font-size:11px;color:#b99cb5;line-height:2;
+}
+.main{margin-left:245px;width:calc(100% - 245px);padding:27px 35px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:27px}
+.topbar h3{font-size:19px;color:#654d78}
+.status{background:#e5f7eb;color:#4d9c70;padding:8px 13px;border-radius:20px;font-size:12px}
+.welcome{
+ background:linear-gradient(115deg,#f9ddeb,#eae1fb);
+ border-radius:22px;padding:30px;
+ display:flex;justify-content:space-between;align-items:center;
+ overflow:hidden;box-shadow:0 8px 25px #d8b8d733;
+}
+.welcome h1{font-size:29px;color:#664d80;margin-bottom:10px}
+.welcome p{color:#866d91;font-size:14px;line-height:1.7}
+.welcome .bird{font-size:78px;margin-right:25px}
+.section{display:none;margin-top:27px}
+.section.active{display:block}
+.section h2{font-size:22px;color:#6d527e;margin-bottom:7px}
+.subtitle{font-size:13px;color:#a58ca6;margin-bottom:21px;line-height:1.6}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-top:22px}
+.card,.panel{
+ background:#fff;border:1px solid var(--border);
+ border-radius:17px;padding:21px;
+ box-shadow:0 5px 20px #d9bad522;
+}
+.card .emoji{font-size:25px;margin-bottom:12px}
+.card h3{font-size:13px;color:#9b83a1;font-weight:500}
+.card strong{font-size:27px;color:#6e547f;display:block;margin-top:7px}
+.panel{margin-top:20px}
+.panel h3{color:#745783;font-size:16px;margin-bottom:15px}
+label{display:block;font-size:13px;color:#876e92;margin:12px 0 5px}
+input,textarea{
+ width:100%;padding:13px;border:1px solid #e8d5e8;
+ border-radius:11px;background:#fffaff;
+ color:#55436e;outline:none;margin:5px 0;
+}
+textarea{height:135px;resize:vertical}
+input:focus,textarea:focus{border-color:#c08bd3;box-shadow:0 0 0 3px #eeddf7}
+.btn{
+ border:0;padding:12px 21px;border-radius:10px;
+ background:linear-gradient(110deg,#e98dbb,#a58add);
+ color:white;font-weight:600;cursor:pointer;
+ box-shadow:0 4px 12px #d7a0d044;transition:.2s;
+}
+.btn:hover{filter:brightness(1.04);transform:translateY(-1px)}
+.result{margin-top:17px;padding:17px;border-radius:13px;display:none;font-size:14px;line-height:1.8;overflow-wrap:anywhere}
+.result.show{display:block}
+.result h3{margin-bottom:8px}
+.risk-badge{display:inline-block;padding:5px 12px;border-radius:20px;font-weight:700;font-size:12px}
+.low{background:#dff5e6;color:#31834c}
+.medium{background:#fff0c9;color:#a46b15}
+.high{background:#ffe0e3;color:#bf3d52}
+.critical{background:#eadcff;color:#753caa}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:13px;text-align:left;border-bottom:1px solid #f2e5f0;overflow-wrap:anywhere}
+th{color:#a17da5}
+td{color:#735f7d}
+.tag{background:#fff0d9;color:#b17a36;padding:5px 9px;border-radius:15px;font-size:11px}
+.bar{height:10px;background:#f3e5f2;border-radius:20px;margin:10px 0 17px;overflow:hidden}
+.bar div{height:100%;background:linear-gradient(90deg,#e994c0,#a78be1);border-radius:20px;transition:width .4s}
+.timeline{border-left:2px solid #e5c7e8;padding-left:20px;margin-left:8px}
+.event{margin-bottom:22px;position:relative}
+.event:before{content:"";position:absolute;left:-26px;top:4px;width:10px;height:10px;border-radius:50%;background:#d78fbd}
+.event small{color:#b08caf}
+.event p{margin-top:5px;font-size:14px}
+.location-box{background:#f9effb;border-radius:13px;padding:20px;margin-top:15px;line-height:2;overflow-wrap:anywhere}
+footer{text-align:center;padding:30px;color:#b69caf;font-size:11px}
+.empty{text-align:center;color:#b59db8;padding:18px}
+@media(max-width:950px){
+ .sidebar{width:200px}
+ .main{margin-left:200px;width:calc(100% - 200px);padding:20px}
+ .cards{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+ .app{display:block}
+ .sidebar{position:relative;width:100%;height:auto;padding:12px}
+ .logo{padding:5px 8px 12px}
+ .sidebar-bottom{display:none}
+ .nav{display:flex;overflow-x:auto;gap:5px}
+ .nav-title{display:none}
+ .nav button{white-space:nowrap;width:auto;font-size:12px;padding:10px}
+ .nav button span{margin-right:5px}
+ .main{margin:0;width:100%;padding:17px}
+ .welcome{padding:20px}
+ .welcome h1{font-size:22px}
+ .welcome .bird{font-size:48px;margin:0}
+ .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .card{padding:14px}
+ .card strong{font-size:23px}
+ .panel{padding:15px;overflow-x:auto}
+ table{min-width:440px}
+ .topbar h3{font-size:16px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="doodles">
+ <span>✉</span><span>⌕</span><span>♢</span>
+ <span>🔒</span><span>⌖</span><span>🛡</span>
+ <span>⚠</span><span>🔍</span>
+</div>
+
+<div class="app">
+
+<aside class="sidebar">
+ <div class="logo">
+  <div class="logo-icon">🦅</div>
+  <div>
+   <h2>MAIL HAWK</h2>
+   <small>SMART THREAT INTELLIGENCE</small>
+  </div>
+ </div>
+
+ <div class="nav-title">MAIN MENU</div>
+ <div class="nav">
+  <button class="active" onclick="showPage('dashboard',this)"><span>⌂</span>Dashboard</button>
+  <button onclick="showPage('scanner',this)"><span>✉</span>Email Scanner</button>
+  <button onclick="showPage('geo',this)"><span>🌍</span>Geolocation</button>
+  <button onclick="showPage('forensics',this)"><span>🔍</span>Forensics</button>
+  <button onclick="showPage('alerts',this)"><span>⚠</span>Threat Alerts</button>
+  <button onclick="showPage('analytics',this)"><span>📊</span>Analytics</button>
+ </div>
+
+ <div class="sidebar-bottom">
+  ✨ Stay alert. Stay protected.<br>
+  MAIL HAWK © 2026
+ </div>
+</aside>
+
+<main class="main">
+
+<div class="topbar">
+ <h3>✦ Intelligence Center</h3>
+ <div class="status">● Demo System Online</div>
+</div>
+
+<div class="welcome">
+ <div>
+  <h1>Welcome to MAIL HAWK 🦅</h1>
+  <p>Your smart email security companion.<br>
+  Detect suspicious emails and explore digital threats.</p>
+ </div>
+ <div class="bird">🦅</div>
+</div>
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="section active">
+ <h2>Dashboard Overview</h2>
+ <p class="subtitle">Your email security at a glance.</p>
+
+ <div class="cards">
+  <div class="card"><div class="emoji">✉️</div><h3>Emails Scanned</h3><strong id="scanned">128</strong></div>
+  <div class="card"><div class="emoji">🛡️</div><h3>Threats Detected</h3><strong id="threats">12</strong></div>
+  <div class="card"><div class="emoji">🌍</div><h3>IP Locations</h3><strong>08</strong></div>
+  <div class="card"><div class="emoji">🔎</div><h3>Investigations</h3><strong>06</strong></div>
+ </div>
+
+ <div class="panel">
+  <h3>♡ Security Activity</h3>
+  <p class="subtitle">Sample security activity overview.</p>
+  <p>Safe email activity</p><div class="bar"><div style="width:82%"></div></div>
+  <p>Suspicious activity</p><div class="bar"><div style="width:28%"></div></div>
+  <p>Investigation progress</p><div class="bar"><div style="width:65%"></div></div>
+ </div>
+
+ <div class="panel">
+  <h3>🦅 Welcome to your security center</h3>
+  <p class="subtitle">Use Email Scanner to analyze an email. View Threat Alerts and Analytics to review your scan results.</p>
+  <button class="btn" onclick="openScanner()">Start Email Scan →</button>
+ </div>
+</section>
+
+<!-- EMAIL SCANNER -->
+<section id="scanner" class="section">
+ <h2>✉ Email Threat Scanner</h2>
+ <p class="subtitle">Analyze sender details and email content for suspicious activity.</p>
+
+ <div class="panel">
+  <h3>📩 Email Information</h3>
+
+  <label>Sender Name</label>
+  <input id="senderName" placeholder="Enter sender name">
+
+  <label>Sender Email Address</label>
+  <input id="senderEmail" type="email" placeholder="example@gmail.com">
+
+  <label>Email Subject</label>
+  <input id="emailSubject" placeholder="Enter email subject">
+
+  <label>Email Content</label>
+  <textarea id="emailText" placeholder="Paste the complete email content here..."></textarea>
+
+  <button class="btn" onclick="scanEmail()">🔍 Scan Email</button>
+
+  <div id="scanResult" class="result"></div>
+ </div>
+</section>
+
+<!-- GEOLOCATION -->
+<section id="geo" class="section">
+ <h2>🌍 Geolocation Intelligence</h2>
+ <p class="subtitle">Explore sample IP location information.</p>
+
+ <div class="panel">
+  <h3>IP Address Lookup</h3>
+  <label>IP Address</label>
+  <input id="ipInput" placeholder="Enter an IP address">
+  <button class="btn" onclick="lookupIP()">Locate IP</button>
+
+  <div id="geoResult" class="location-box" style="display:none"></div>
+  <p class="subtitle" style="margin-top:15px">Note: This is simulated sample data, not a real IP lookup.</p>
+ </div>
+</section>
+
+<!-- FORENSICS -->
+<section id="forensics" class="section">
+ <h2>🔍 Digital Forensics</h2>
+ <p class="subtitle">Explore the sample email investigation timeline.</p>
+
+ <div class="panel">
+  <h3>Investigation Timeline</h3>
+  <div class="timeline">
+   <div class="event"><small>09:00 AM</small><p>📩 Suspicious email received</p></div>
+   <div class="event"><small>09:02 AM</small><p>🔍 Email content examined</p></div>
+   <div class="event"><small>09:04 AM</small><p>⚠ Suspicious link identified</p></div>
+   <div class="event"><small>09:07 AM</small><p>🛡 Threat report generated</p></div>
+  </div>
+ </div>
+</section>
+
+<!-- THREAT ALERTS -->
+<section id="alerts" class="section">
+ <h2>⚠ Threat Alerts</h2>
+ <p class="subtitle">Review detected suspicious email activity.</p>
+
+ <div class="panel">
+  <h3>Alert Records</h3>
+  <table>
+   <thead>
+    <tr><th>Sender</th><th>Threat Type</th><th>Risk Level</th><th>Risk Score</th></tr>
+   </thead>
+   <tbody id="alertRows">
+    <tr><td>Sample Sender</td><td>Phishing</td><td><span class="risk-badge high">HIGH</span></td><td>75/100</td></tr>
+    <tr><td>Unknown Sender</td><td>Suspicious Link</td><td><span class="risk-badge medium">MEDIUM</span></td><td>35/100</td></tr>
+   </tbody>
+  </table>
+ </div>
+</section>
+
+<!-- ANALYTICS -->
+<section id="analytics" class="section">
+ <h2>📊 Threat Analytics</h2>
+ <p class="subtitle">Summary of email scanning activity during this session.</p>
+
+ <div class="cards">
+  <div class="card"><div class="emoji">📩</div><h3>Total Emails Scanned</h3><strong id="analyticsScanned">128</strong></div>
+  <div class="card"><div class="emoji">🚨</div><h3>Threats Detected</h3><strong id="analyticsThreats">12</strong></div>
+  <div class="card"><div class="emoji">🟢</div><h3>Low Risk</h3><strong id="lowCount">0</strong></div>
+  <div class="card"><div class="emoji">🔴</div><h3>High / Critical</h3><strong id="highCount">0</strong></div>
+ </div>
+
+ <div class="panel">
+  <h3>Risk Level Distribution</h3>
+  <p>Low Risk</p><div class="bar"><div id="lowBar" style="width:0%"></div></div>
+  <p>Medium Risk</p><div class="bar"><div id="mediumBar" style="width:0%"></div></div>
+  <p>High Risk</p><div class="bar"><div id="highBar" style="width:0%"></div></div>
+  <p>Critical Risk</p><div class="bar"><div id="criticalBar" style="width:0%"></div></div>
+ </div>
+
+ <div class="panel">
+  <h3>Recent Scan History</h3>
+  <table>
+   <thead><tr><th>Sender</th><th>Threat Type</th><th>Risk Level</th><th>Score</th></tr></thead>
+   <tbody id="analyticsHistory">
+    <tr><td colspan="4" class="empty">No new scans yet</td></tr>
+   </tbody>
+  </table>
+ </div>
+</section>
+
+<footer>Made with ♡ | MAIL HAWK — Smart Email Threat Intelligence</footer>
+
+</main>
+</div>
+
+<script>
+
+// PAGE NAVIGATION
+function showPage(id,button){
+ document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+
+ document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+ button.classList.add('active');
+}
+
+function openScanner(){
+ const buttons=document.querySelectorAll('.nav button');
+ showPage('scanner',buttons[1]);
+}
+
+// INITIAL COUNTERS
+let scanned=128;
+let threats=12;
+
+let riskCounts={
+ LOW:0,
+ MEDIUM:0,
+ HIGH:0,
+ CRITICAL:0
+};
+
+// SAFE HTML DISPLAY
+function escapeHTML(value){
+ return String(value).replace(/[&<>"']/g,function(ch){
+  return {
+   '&':'&amp;',
+   '<':'&lt;',
+   '>':'&gt;',
+   '"':'&quot;',
+   "'":'&#39;'
+  }[ch];
+ });
+}
+
+// EMAIL SCANNING
+function scanEmail(){
+
+ const sender=document.getElementById('senderName').value.trim();
+ const senderEmail=document.getElementById('senderEmail').value.trim();
+ const subject=document.getElementById('emailSubject').value.trim();
+ const content=document.getElementById('emailText').value.trim();
+
+ const result=document.getElementById('scanResult');
+
+ if(!sender || !senderEmail || !subject || !content){
+  result.className='result show';
+  result.style.background='#fff0e8';
+  result.innerHTML='⚠ Please fill in all email details before scanning.';
+  return;
+ }
+
+ let score=0;
+ let reasons=[];
+
+ const fullText=(subject+' '+content).toLowerCase();
+
+ const phishingWords=[
+  'verify your account',
+  'account suspended',
+  'confirm your password',
+  'login immediately',
+  'bank details',
+  'click here',
+  'urgent action required',
+  'won a prize',
+  'free gift',
+  'update your password',
+  'share your otp',
+  'confirm your identity'
+ ];
+
+ const suspiciousWords=[
+  'urgent',
+  'immediately',
+  'limited time',
+  'claim now',
+  'congratulations',
+  'payment failed',
+  'act now',
+  'account blocked'
+ ];
+
+ phishingWords.forEach(word=>{
+  if(fullText.includes(word)){
+   score+=15;
+   reasons.push('Phishing phrase detected: '+word);
+  }
+ });
+
+ suspiciousWords.forEach(word=>{
+  if(fullText.includes(word)){
+   score+=7;
+   reasons.push('Suspicious phrase detected: '+word);
+  }
+ });
+
+ // LINK CHECK
+ if(fullText.includes('http://')){
+  score+=20;
+  reasons.push('Insecure HTTP link detected');
+ }
+
+ const links=(fullText.match(/https?:\/\//g)||[]).length;
+
+ if(links>2){
+  score+=10;
+  reasons.push('Multiple links detected');
+ }
+
+ // EMAIL FORMAT CHECK
+ const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+ if(!emailPattern.test(senderEmail)){
+  score+=20;
+  reasons.push('Invalid sender email format');
+ }
+
+ // SIMPLE SENDER DOMAIN CHECK
+ const domain=senderEmail.split('@')[1]?.toLowerCase()||'';
+
+ if(domain.includes('secure-login')||
+    domain.includes('verify-account')||
+    domain.includes('account-alert')){
+  score+=25;
+  reasons.push('Sender domain contains suspicious wording');
+ }
+
+ // LIMIT SCORE
+ score=Math.min(score,100);
+
+ let level='';
+ let color='';
+ let recommendation='';
+
+ if(score>=80){
+  level='CRITICAL';
+  color='#eadcff';
+  recommendation='Very high risk indicators. Do not click links or share sensitive information.';
+ }
+ else if(score>=50){
+  level='HIGH';
+  color='#ffe0e3';
+  recommendation='Possible phishing activity. Verify the sender independently.';
+ }
+ else if(score>=20){
+  level='MEDIUM';
+  color='#fff0cf';
+  recommendation='Suspicious signs found. Check the sender and links carefully.';
+ }
+ else{
+  level='LOW';
+  color='#e4f7e9';
+  recommendation='Few risk indicators found. This does not guarantee that the email is safe.';
+ }
+
+ // THREAT CLASSIFICATION
+ let type='No common threat indicators';
+
+ if(reasons.some(r=>r.includes('Phishing phrase'))){
+  type='Possible Phishing';
+ }
+ else if(reasons.some(r=>r.includes('link'))){
+  type='Suspicious Link';
+ }
+ else if(reasons.length>0){
+  type='Suspicious Email';
+ }
+
+ // UPDATE COUNTERS
+ scanned++;
+
+ if(level==='HIGH'||level==='CRITICAL'){
+  threats++;
+ }
+
+ riskCounts[level]++;
+
+ document.getElementById('scanned').textContent=scanned;
+ document.getElementById('analyticsScanned').textContent=scanned;
+
+ document.getElementById('threats').textContent=threats;
+ document.getElementById('analyticsThreats').textContent=threats;
+
+ // RISK BADGE
+ let badgeClass=level.toLowerCase();
+
+ // SHOW SCAN RESULT
+ result.style.background=color;
+ result.style.color='#594866';
+ result.className='result show';
+
+ result.innerHTML=`
+  <h3>🦅 MAIL HAWK – Scan Report</h3>
+  <b>Sender Name:</b> ${escapeHTML(sender)}<br>
+  <b>Sender Email:</b> ${escapeHTML(senderEmail)}<br>
+  <b>Email Subject:</b> ${escapeHTML(subject)}<br>
+  <b>Threat Type:</b> ${type}<br><br>
+
+  <b>Risk Level:</b>
+  <span class="risk-badge ${badgeClass}">${level}</span><br>
+
+  <b>Risk Score:</b> ${score}/100<br><br>
+
+  <b>⚠ Warning / Findings:</b><br>
+  ${reasons.length ? reasons.map(r=>'• '+escapeHTML(r)).join('<br>') : 'No common suspicious indicators found.'}
+  <br><br>
+
+  <b>🛡 Recommendation:</b><br>
+  ${recommendation}
+ `;
+
+ updateAnalytics();
+
+ // ADD THREAT ALERT
+ document.getElementById('alertRows').insertAdjacentHTML('afterbegin',`
+  <tr>
+   <td>${escapeHTML(sender)}</td>
+   <td>${escapeHTML(type)}</td>
+   <td><span class="risk-badge ${badgeClass}">${level}</span></td>
+   <td>${score}/100</td>
+  </tr>
+ `);
+
+ // ADD ANALYTICS HISTORY
+ const history=document.getElementById('analyticsHistory');
+
+ if(history.innerText.includes('No new scans yet')){
+  history.innerHTML='';
+ }
+
+ history.insertAdjacentHTML('afterbegin',`
+  <tr>
+   <td>${escapeHTML(sender)}</td>
+   <td>${escapeHTML(type)}</td>
+   <td><span class="risk-badge ${badgeClass}">${level}</span></td>
+   <td>${score}/100</td>
+  </tr>
+ `);
+}
+
+// UPDATE ANALYTICS
+function updateAnalytics(){
+
+ const total=Object.values(riskCounts).reduce((a,b)=>a+b,0);
+
+ document.getElementById('lowCount').textContent=riskCounts.LOW;
+
+ document.getElementById('highCount').textContent=
+ riskCounts.HIGH+riskCounts.CRITICAL;
+
+ ['LOW','MEDIUM','HIGH','CRITICAL'].forEach(level=>{
+
+  const percentage=total?
+   (riskCounts[level]/total)*100:0;
+
+  const id=level.toLowerCase()+'Bar';
+
+  document.getElementById(id).style.width=percentage+'%';
+ });
+}
+
+// GEOLOCATION DEMO
+function lookupIP(){
+
+ const ip=document.getElementById('ipInput').value.trim();
+ const box=document.getElementById('geoResult');
+
+ if(!ip){
+  alert('Please enter an IP address');
+  return;
+ }
+
+ box.style.display='block';
+
+ box.innerHTML=`
+  <b>🌍 Sample IP Investigation</b><br>
+  IP Address: ${escapeHTML(ip)}<br>
+  Region: Sample Region<br>
+  Country: Demo Country<br>
+  Risk Status: Under Review<br>
+  <small>Simulated data for frontend demonstration.</small>
+ `;
+}
+
+</script>
+
+</body>
+</html>
